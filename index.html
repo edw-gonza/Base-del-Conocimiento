@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base de Conocimiento — Motor de Tasa Fija · Libranza y Libre Inversión</title>
+<meta name="description" content="Reglas de negocio completas y autocontenidas para calcular tasa fija en los escenarios Libre Inversión, Compra de Cartera y Preaprobados.">
+<style>
+  :root{
+    --azul:#002E6D;
+    --azul-suave:#0E4A96;
+    --amarillo:#FDDA24;
+    --tinta:#1B1F27;
+    --papel:#FBFAF7;
+    --panel:#FFFFFF;
+    --linea:#D9D4C7;
+    --gris:#5B6270;
+    --exito:#1E6F50;
+    --alerta:#9A5B00;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:"Georgia","Iowan Old Style",serif;
+    line-height:1.6;
+  }
+  .layout{display:flex; max-width:1280px; margin:0 auto;}
+  nav.toc{
+    width:270px; flex:0 0 270px;
+    position:sticky; top:0; align-self:flex-start;
+    height:100vh; overflow-y:auto;
+    padding:32px 20px 32px 28px;
+    border-right:1px solid var(--linea);
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  nav.toc .brand{
+    font-weight:700; color:var(--azul); font-size:13px;
+    letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px;
+  }
+  nav.toc .brand-sub{ font-size:12px; color:var(--gris); margin-bottom:22px;}
+  nav.toc ol{list-style:none; margin:0; padding:0; counter-reset:sec;}
+  nav.toc li{counter-increment:sec; margin-bottom:2px;}
+  nav.toc a{
+    display:block; font-size:13.5px; color:var(--tinta); text-decoration:none;
+    padding:6px 8px 6px 0; border-radius:4px;
+  }
+  nav.toc a::before{
+    content: counter(sec) ". ";
+    color:var(--azul-suave); font-weight:700; margin-right:2px;
+  }
+  nav.toc a:hover{ color:var(--azul-suave); }
+  main{ flex:1; min-width:0; padding:48px 56px 120px; }
+  header.hero{
+    border-bottom:4px solid var(--amarillo);
+    padding-bottom:28px; margin-bottom:40px;
+  }
+  header.hero .eyebrow{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    text-transform:uppercase; letter-spacing:.12em; font-size:12px;
+    color:var(--azul); font-weight:700; margin-bottom:10px;
+  }
+  header.hero h1{
+    font-size:34px; margin:0 0 14px; color:var(--azul); line-height:1.15;
+  }
+  header.hero p.lead{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; color:var(--gris); max-width:70ch; margin:0;
+  }
+  section{ margin-bottom:52px; scroll-margin-top:24px; }
+  h2{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    color:var(--azul); font-size:22px; border-left:5px solid var(--amarillo);
+    padding-left:14px; margin:0 0 18px;
+  }
+  h3{ color:var(--azul-suave); font-size:17.5px; margin:28px 0 10px; font-family:"Helvetica Neue",Arial,sans-serif;}
+  h4{ font-size:15px; color:var(--tinta); margin:20px 0 8px; font-family:"Helvetica Neue",Arial,sans-serif;}
+  p{ margin:0 0 14px; }
+  ul,ol{ margin:0 0 16px; padding-left:22px; }
+  li{ margin-bottom:6px; }
+  table{
+    border-collapse:collapse; width:100%; margin:14px 0 24px;
+    font-family:"Helvetica Neue",Arial,sans-serif; font-size:13.5px;
+  }
+  caption{ text-align:left; font-size:12.5px; color:var(--gris); margin-bottom:6px; font-style:italic;}
+  th,td{ border:1px solid var(--linea); padding:7px 10px; text-align:center; }
+  th{ background:var(--azul); color:#fff; font-weight:600; font-size:12.5px;}
+  td:first-child, th:first-child{ text-align:left; font-weight:600; background:#F2EFE6;}
+  tr:nth-child(even) td{ background:#F8F7F2; }
+  tr:nth-child(even) td:first-child{ background:#EDEADF; }
+  code, .formula{
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    background:#F2EFE6; border:1px solid var(--linea); border-radius:4px;
+    padding:1px 6px; font-size:13px; color:#3B2F14;
+  }
+  pre{
+    background:#0E1522; color:#E7ECF3; padding:18px 20px; border-radius:8px;
+    overflow-x:auto; font-family:"SFMono-Regular",Consolas,monospace; font-size:13px;
+    line-height:1.55;
+  }
+  pre code{ background:none; border:none; color:inherit; padding:0; }
+  .callout{
+    border:1px solid var(--linea); border-left:5px solid var(--azul-suave);
+    background:var(--panel); padding:16px 20px; border-radius:6px;
+    font-family:"Helvetica Neue",Arial,sans-serif; font-size:14px; margin:18px 0;
+  }
+  .callout.warn{ border-left-color:var(--alerta); }
+  .callout.ok{ border-left-color:var(--exito); }
+  .callout .tag{
+    display:inline-block; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; font-size:11px; margin-bottom:6px; color:var(--azul-suave);
+  }
+  .callout.warn .tag{ color:var(--alerta); }
+  .callout.ok .tag{ color:var(--exito); }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:18px 0;}
+  .card{
+    border:1px solid var(--linea); border-radius:8px; padding:16px 18px; background:var(--panel);
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .card h4{ margin-top:0; color:var(--azul); }
+  .card p{ font-size:13.5px; color:var(--gris); margin:0;}
+  footer{
+    font-family:"Helvetica Neue",Arial,sans-serif; font-size:12.5px; color:var(--gris);
+    border-top:1px solid var(--linea); padding-top:20px; margin-top:60px;
+  }
+  @media (max-width:900px){
+    .layout{flex-direction:column;}
+    nav.toc{ position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid var(--linea);}
+    main{ padding:32px 20px 80px; }
+    .grid3{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Tabla de contenido">
+  <div class="brand">Base de conocimiento</div>
+  <div class="brand-sub">Motor de Tasa Fija — Libranza / Libre Inversión</div>
+  <ol>
+    <li><a href="#proposito">Propósito y alcance</a></li>
+    <li><a href="#glosario">Glosario</a></li>
+    <li><a href="#entradas">Datos de entrada</a></li>
+    <li><a href="#tablas">Tablas maestras de tasas</a></li>
+    <li><a href="#reglas">Reglas transversales</a></li>
+    <li><a href="#libre-inversion">Escenario: Libre Inversión</a></li>
+    <li><a href="#compra-cartera">Escenario: Compra de Cartera</a></li>
+    <li><a href="#preaprobados">Escenario: Preaprobados</a></li>
+    <li><a href="#algoritmo">Algoritmo completo</a></li>
+    <li><a href="#ejemplos">Ejemplos resueltos</a></li>
+    <li><a href="#limitaciones">Límites y supuestos conocidos</a></li>
+    <li><a href="#agente">Instrucciones para el agente</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="hero">
+  <div class="eyebrow">Documento 100% autocontenido · Ninguna tabla, tarifa o regla vive fuera de esta página</div>
+  <h1>Motor de Tasa Fija (TF): Preaprobados, Compra de Cartera y Libre Inversión</h1>
+  <p class="lead">Esta página reúne, en un solo lugar y con lenguaje de negocio, <strong>absolutamente todas</strong> las reglas, tablas de tasas y tarifas de seguros necesarias para calcular una tasa fija, convertirla y liquidar la cuota de un crédito de libranza o libre inversión, en sus tres escenarios comerciales. No depende de ningún archivo de Excel, sistema o base de datos externa: cada número que un agente necesita para responder — tasas por grupo/monto/plazo, tarifas de seguro por edad, porcentajes de beneficios y descuentos — está transcrito aquí de forma explícita y puede usarse de manera autónoma.</p>
+</header>
+
+<section id="proposito">
+<h2>1. Propósito y alcance</h2>
+<p>Este documento funciona como fuente de conocimiento para un agente conversacional (por ejemplo, un agente de Microsoft Copilot Studio) que deba responder preguntas sobre tasas fijas, simular una cuota, o explicar por qué una tasa resultó en un valor determinado. El agente debe poder resolver cualquier caso <strong>usando únicamente el contenido de esta página</strong>, sin acceso a ningún sistema, hoja de cálculo o base de datos externa.</p>
+
+<h3>Dentro de alcance</h3>
+<ul>
+  <li><strong>Libre Inversión</strong> a tasa fija: planes <strong>PA6</strong> (con garantía FNG), <strong>P48</strong> (con seguro de desempleo) y <strong>P12</strong> (tasa fija plana).</li>
+  <li><strong>Compra de Cartera</strong> a tasa fija (producto independiente): planes <strong>P48</strong> y <strong>P79</strong>.</li>
+  <li><strong>Preaprobados</strong> a tasa fija, con tres modalidades internas: <strong>Libre Inversión</strong>, <strong>Retanqueos</strong> y <strong>Compra Cartera</strong>; planes <strong>P48</strong>, <strong>P79/P80/P81</strong> y <strong>PA6</strong>.</li>
+</ul>
+
+<h3>Fuera de alcance</h3>
+<p>Cualquier producto a <strong>tasa variable</strong> (indexado a IBR o DTF), incluyendo planes identificados como D78 o D20, "Cuota Fija a Tasa Variable", y todo lo relacionado con puntos IBR o DTF vigente. Si un usuario pregunta por tasa variable, el agente debe indicar que esta base de conocimiento cubre solo tasa fija.</p>
+</section>
+
+<section id="glosario">
+<h2>2. Glosario</h2>
+<table>
+<thead><tr><th>Término</th><th>Definición</th></tr></thead>
+<tbody>
+<tr><td>M.V.</td><td>Tasa Mes Vencido: tasa de interés periódica mensual.</td></tr>
+<tr><td>N.A.M.V.</td><td>Tasa Nominal Anual Mes Vencido = M.V. × 12.</td></tr>
+<tr><td>E.A.</td><td>Tasa Efectiva Anual, resultado de capitalizar la N.A.M.V. mensualmente durante 12 periodos: <code>E.A. = (1 + N.A.M.V./12)^12 − 1</code>.</td></tr>
+<tr><td>Grupo del cliente (G1–G7)</td><td>Clasificación comercial/de riesgo del cliente asignada por el banco. G1 es el grupo con mejor condición de tasa; G7, el de condición más alta. Es un dato de entrada dado, no se calcula en este documento.</td></tr>
+<tr><td>Segmento</td><td>Clasificación adicional del cliente usada únicamente para el beneficio "Preferencial" (ver sección 5). Valores posibles: <em>Personal, Plus, Preferencial, Independientes, Otros Segmentos</em>.</td></tr>
+<tr><td>Modalidad (solo Preaprobados)</td><td>Uno de: <em>Libre Inversión</em>, <em>Retanqueos</em>, <em>Compra Cartera</em>. Determina qué tabla maestra de tasas se usa y qué descuentos adicionales aplican.</td></tr>
+<tr><td>Plan P48</td><td>Producto de tasa fija asociado a la venta de un seguro de desempleo. Su tasa base es <strong>0.15 puntos porcentuales menor</strong> que la del plan plano equivalente (P12/P79/P80/P81), pero la cuota adicionalmente cobra la prima de seguro de desempleo por separado.</td></tr>
+<tr><td>Plan P12 / P79 / P80 / P81</td><td>Planes de tasa fija "plana": no llevan seguro de desempleo incluido ni el descuento de 0.15 puntos asociado.</td></tr>
+<tr><td>Plan PA6</td><td>Plan de tasa fija con garantía FNG (Fondo Nacional de Garantías) opcional.</td></tr>
+<tr><td>FNG</td><td>Garantía que tiene un costo (2.99% del monto + IVA del 19%) que, si el cliente la toma, se descuenta directamente del desembolso.</td></tr>
+<tr><td>PMT</td><td>Fórmula de amortización a cuota fija (sistema francés): calcula el pago periódico que amortiza un préstamo a una tasa y plazo dados.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="entradas">
+<h2>3. Datos de entrada necesarios</h2>
+<table>
+<thead><tr><th>Dato</th><th>Aplica a</th><th>Valores posibles</th></tr></thead>
+<tbody>
+<tr><td>Grupo del cliente</td><td>Los 3 escenarios</td><td>G1, G2, G3, G4, G5, G6, G7</td></tr>
+<tr><td>Monto solicitado</td><td>Los 3 escenarios</td><td>Cualquier valor en pesos colombianos ≥ $1.000.000</td></tr>
+<tr><td>Plazo (meses)</td><td>Los 3 escenarios</td><td>48, 60, 72, 84, 96, 108 o 120 meses (según el plan)</td></tr>
+<tr><td>Segmento</td><td>Los 3 escenarios</td><td>Personal, Plus, Preferencial, Independientes, Otros Segmentos</td></tr>
+<tr><td>Edad del cliente</td><td>Los 3 escenarios (solo para primas de seguro)</td><td>Número entero</td></tr>
+<tr><td>¿Cliente nómina?</td><td>Los 3 escenarios</td><td>SI / Nómina potencial / NO</td></tr>
+<tr><td>Plan elegido</td><td>Los 3 escenarios</td><td>Según escenario (ver secciones 6–8)</td></tr>
+<tr><td>Garantía FNG (Con/Sin)</td><td>Libre Inversión, Preaprobados</td><td>Con FNG / Sin FNG</td></tr>
+<tr><td>Modalidad</td><td>Solo Preaprobados</td><td>Libre Inversión / Retanqueos / Compra Cartera</td></tr>
+<tr><td>Entidad a comprar cartera</td><td>Solo Preaprobados, modalidad Compra Cartera</td><td>Otros Bancos, Scotiabank, Davivienda, Itaú, BBVA</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="tablas">
+<h2>4. Tablas maestras de tasas</h2>
+<p>Existen exactamente <strong>dos</strong> tablas maestras de tasa fija (M.V., antes de cualquier ajuste). Ambas comparten la misma estructura: Grupo del cliente (G1–G7) × 6 rangos de monto × 2 bloques de plazo.</p>
+
+<h3>Rangos de monto (idénticos en ambas tablas)</h3>
+<ol>
+  <li>Entre $1.000.000 y $11.999.999</li>
+  <li>Entre $12.000.000 y $29.999.999</li>
+  <li>Entre $30.000.000 y $59.999.999</li>
+  <li>Entre $60.000.000 y $149.999.999</li>
+  <li>Entre $150.000.000 y $299.999.999</li>
+  <li>Mayor o igual a $300.000.000</li>
+</ol>
+
+<h3>4.1 Tabla A — Tasa base para Libre Inversión, y para Preaprobados en modalidad "Libre Inversión"</h3>
+<table>
+<caption>Tasa M.V. por grupo, plazo y rango de monto. La N.A.M.V. de cualquier celda = valor × 12.</caption>
+<thead><tr><th>Grupo</th><th>Plazo</th><th>Rango 1</th><th>Rango 2</th><th>Rango 3</th><th>Rango 4</th><th>Rango 5</th><th>Rango 6</th></tr></thead>
+<tbody>
+<tr><td>G1</td><td>48–59 meses</td><td>1.72%</td><td>1.72%</td><td>1.71%</td><td>1.66%</td><td>1.65%</td><td>1.64%</td></tr>
+<tr><td>G1</td><td>60+ meses</td><td>1.70%</td><td>1.70%</td><td>1.69%</td><td>1.64%</td><td>1.63%</td><td>1.62%</td></tr>
+<tr><td>G2</td><td>48–59 meses</td><td>1.85%</td><td>1.84%</td><td>1.83%</td><td>1.81%</td><td>1.80%</td><td>1.79%</td></tr>
+<tr><td>G2</td><td>60+ meses</td><td>1.83%</td><td>1.82%</td><td>1.81%</td><td>1.79%</td><td>1.78%</td><td>1.77%</td></tr>
+<tr><td>G3</td><td>48–59 meses</td><td>1.95%</td><td>1.94%</td><td>1.93%</td><td>1.92%</td><td>1.91%</td><td>1.90%</td></tr>
+<tr><td>G3</td><td>60+ meses</td><td>1.93%</td><td>1.92%</td><td>1.91%</td><td>1.90%</td><td>1.89%</td><td>1.88%</td></tr>
+<tr><td>G4</td><td>48–59 meses</td><td>2.12%</td><td>2.12%</td><td>2.12%</td><td>2.12%</td><td>2.12%</td><td>2.12%</td></tr>
+<tr><td>G4</td><td>60+ meses</td><td>2.10%</td><td>2.10%</td><td>2.10%</td><td>2.10%</td><td>2.10%</td><td>2.10%</td></tr>
+<tr><td>G5</td><td>36–59 meses</td><td>2.27%</td><td>2.27%</td><td>2.27%</td><td>2.26%</td><td>2.23%</td><td>2.18%</td></tr>
+<tr><td>G5</td><td>60+ meses</td><td>2.27%</td><td>2.27%</td><td>2.26%</td><td>2.25%</td><td>2.19%</td><td>2.14%</td></tr>
+<tr><td>G6</td><td>36–59 meses</td><td>2.40%</td><td>2.40%</td><td>2.40%</td><td>2.30%</td><td>2.20%</td><td>2.15%</td></tr>
+<tr><td>G6</td><td>60+ meses</td><td>2.40%</td><td>2.40%</td><td>2.36%</td><td>2.26%</td><td>2.16%</td><td>2.11%</td></tr>
+<tr><td>G7</td><td>36–59 meses</td><td>2.33%</td><td>2.33%</td><td>2.30%</td><td>2.20%</td><td>2.10%</td><td>2.05%</td></tr>
+<tr><td>G7</td><td>60+ meses</td><td>2.31%</td><td>2.31%</td><td>2.28%</td><td>2.18%</td><td>2.08%</td><td>2.03%</td></tr>
+</tbody>
+</table>
+<p><strong>Nota:</strong> para G1–G4 el bloque de plazo corto es "48 a 59 meses"; para G5–G7 el bloque de plazo corto es más amplio, "36 a 59 meses". El bloque de plazo largo en ambos casos es "60 meses o más" (60, 72, 84… hasta 120, con ajustes propios — ver sección 5.3).</p>
+
+<h3>4.2 Tabla B — Tasa base para Compra de Cartera, y para Preaprobados en modalidad "Retanqueos" o "Compra Cartera"</h3>
+<table>
+<caption>Idéntica a la Tabla A para G1–G4. Diverge en G5, G6 y G7.</caption>
+<thead><tr><th>Grupo</th><th>Plazo</th><th>Rango 1</th><th>Rango 2</th><th>Rango 3</th><th>Rango 4</th><th>Rango 5</th><th>Rango 6</th></tr></thead>
+<tbody>
+<tr><td>G1</td><td>48–59 meses</td><td>1.72%</td><td>1.72%</td><td>1.71%</td><td>1.66%</td><td>1.65%</td><td>1.64%</td></tr>
+<tr><td>G1</td><td>60+ meses</td><td>1.70%</td><td>1.70%</td><td>1.69%</td><td>1.64%</td><td>1.63%</td><td>1.62%</td></tr>
+<tr><td>G2</td><td>48–59 meses</td><td>1.85%</td><td>1.84%</td><td>1.83%</td><td>1.81%</td><td>1.80%</td><td>1.79%</td></tr>
+<tr><td>G2</td><td>60+ meses</td><td>1.83%</td><td>1.82%</td><td>1.81%</td><td>1.79%</td><td>1.78%</td><td>1.77%</td></tr>
+<tr><td>G3</td><td>48–59 meses</td><td>1.95%</td><td>1.94%</td><td>1.93%</td><td>1.92%</td><td>1.91%</td><td>1.90%</td></tr>
+<tr><td>G3</td><td>60+ meses</td><td>1.93%</td><td>1.92%</td><td>1.91%</td><td>1.90%</td><td>1.89%</td><td>1.88%</td></tr>
+<tr><td>G4</td><td>48–59 meses</td><td>2.12%</td><td>2.12%</td><td>2.12%</td><td>2.12%</td><td>2.12%</td><td>2.12%</td></tr>
+<tr><td>G4</td><td>60+ meses</td><td>2.10%</td><td>2.10%</td><td>2.10%</td><td>2.10%</td><td>2.10%</td><td>2.10%</td></tr>
+<tr><td>G5</td><td>36–59 meses</td><td>2.25%</td><td>2.25%</td><td>2.25%</td><td>2.25%</td><td>1.77%</td><td>1.67%</td></tr>
+<tr><td>G5</td><td>60+ meses</td><td>2.25%</td><td>2.25%</td><td>2.25%</td><td>1.77%</td><td>1.72%</td><td>1.62%</td></tr>
+<tr><td>G6</td><td>36–59 meses</td><td>2.12%</td><td>1.97%</td><td>1.84%</td><td>1.72%</td><td>1.67%</td><td>1.57%</td></tr>
+<tr><td>G6</td><td>60+ meses</td><td>2.08%</td><td>1.93%</td><td>1.80%</td><td>1.68%</td><td>1.63%</td><td>1.53%</td></tr>
+<tr><td>G7</td><td>36–59 meses</td><td>2.12%</td><td>1.97%</td><td>1.84%</td><td>1.72%</td><td>1.67%</td><td>1.57%</td></tr>
+<tr><td>G7</td><td>60+ meses</td><td>2.08%</td><td>1.93%</td><td>1.80%</td><td>1.68%</td><td>1.63%</td><td>1.53%</td></tr>
+</tbody>
+</table>
+
+<h4>Cómo ubicar una tasa en cualquiera de las dos tablas</h4>
+<pre><code>1. Ubicar la fila del Grupo del cliente (G1 a G7).
+2. Dentro de ese grupo, elegir el bloque de plazo:
+   - "corto"  si el plazo solicitado está entre 36/48 y 59 meses (según el grupo)
+   - "largo"  si el plazo solicitado es 60 meses (para plazos > 60 meses, ver sección 5.3)
+3. Ubicar la columna del rango de monto que contiene el monto solicitado.
+4. El valor encontrado es la tasa BASE en M.V., antes de cualquier ajuste
+   (nómina, preferencial, entidad, etc. — ver sección 5).</code></pre>
+</section>
+
+<section id="reglas">
+<h2>5. Reglas transversales (aplican en los tres escenarios)</h2>
+
+<h3>5.1 Relación entre el plan P48 y el plan plano</h3>
+<div class="callout">
+<span class="tag">Regla clave</span>
+Para un mismo grupo, monto y plazo:
+<pre><code>tasa_P48 (M.V.)   = tasa_plana (M.V.) − 0.15%
+tasa_plana (M.V.) = valor tomado directamente de la Tabla A o B (sección 4)</code></pre>
+El plan P48 tiene una tasa 0.15 puntos porcentuales <strong>más baja</strong> que el plan plano equivalente (P12/P79/P80/P81), porque el cliente en P48 además contrata un seguro de desempleo cuya prima se cobra por separado en la cuota (sección 5.6). El descuento de tasa es el incentivo comercial por tomar ese seguro; no es que la tasa "incluya" el costo del seguro.
+</div>
+<p>Para reportes internos existe una <strong>"tasa reconstruida"</strong> que deshace ese incentivo (se usa para comparabilidad entre sistemas):</p>
+<pre><code>tasa_reconstruida_P48 (N.A.M.V.) = (tasa_P48_M.V. + 0.15%) × 12</code></pre>
+
+<h3>5.2 Beneficio por nómina</h3>
+<table>
+<thead><tr><th>Respuesta del cliente</th><th>Descuento sobre la tasa base</th></tr></thead>
+<tbody>
+<tr><td>SI (es cliente de nómina)</td><td>−0.05%</td></tr>
+<tr><td>Nómina potencial</td><td>0% (sin descuento)</td></tr>
+<tr><td>NO</td><td>0% (sin descuento)</td></tr>
+</tbody>
+</table>
+<p>Este descuento se aplica de forma independiente tanto al plan P48 como al plan plano.</p>
+
+<h3>5.3 Extensión de la tasa a plazos superiores a 60 meses</h3>
+<p>Las tablas maestras solo definen tasas hasta 60 meses. Para plazos de <strong>61 a 84 meses</strong> y de <strong>85 a 120 meses</strong>, la tasa no se busca en tabla: se calcula a partir de la tasa plana de <strong>60 meses ya ajustada por nómina</strong>, de forma independiente para cada bloque (no se encadena un bloque sobre el otro):</p>
+<table>
+<thead><tr><th>Grupo</th><th>61–84 meses</th><th>85–120 meses</th></tr></thead>
+<tbody>
+<tr><td>G1 y G2</td><td>tasa_plana_60m − 0.05%</td><td>tasa_plana_60m − 0.07%</td></tr>
+<tr><td>G3 en adelante</td><td>tasa_plana_60m + 0.05%</td><td>tasa_plana_60m + 0.02%</td></tr>
+</tbody>
+</table>
+<p>Si el plan es P48, a cualquiera de los dos resultados anteriores se le resta además <strong>0.10 puntos porcentuales</strong> (adicional al −0.15% de la sección 5.1, que ya está incorporado en la tasa_plana_60m usada como base):</p>
+<pre><code>tasa_P48(61-84 o 85-120) = tasa_plana(mismo bloque, fórmula de la tabla anterior) − 0.10%</code></pre>
+
+<h3>5.4 Conversión de tasas</h3>
+<pre><code>N.A.M.V. = M.V. × 12
+E.A.     = (1 + N.A.M.V./12)^12 − 1</code></pre>
+<p>Estas conversiones se hacen siempre sobre la M.V. <em>final</em>, es decir, después de aplicar todos los descuentos y ajustes de esta sección. Nunca se toman de una tabla, se calculan siempre.</p>
+
+<h3>5.5 Cálculo de la cuota</h3>
+<p>Para la mayoría de plazos (48 a 60 meses, y en general cuando el plan lo permite) se usa la fórmula de amortización a cuota fija:</p>
+<pre><code>Cuota = Monto × M.V. / (1 − (1 + M.V.)^(−n))</code></pre>
+<p>donde <code>n</code> es el número de cuotas (el plazo en meses) y <code>M.V.</code> es la tasa mensual final ya ajustada.</p>
+<div class="callout warn">
+<span class="tag">Excepción a documentar</span>
+Para algunos planes y plazos largos (72 a 120 meses, principalmente en el plan con garantía FNG y en ciertos plazos del escenario Preaprobados) la cuota se calcula con una fórmula de <strong>interés simple no capitalizado</strong> en lugar de amortización francesa:
+<pre><code>Cuota = (Monto / n) + Monto × M.V.</code></pre>
+Esta cuota resulta distinta (normalmente más alta) que la que daría la fórmula estándar de amortización para el mismo plazo. No es un error de negocio, pero el agente debe usar la fórmula correcta según el plan y el plazo, y nunca asumir amortización francesa para todos los casos por igual.
+</div>
+
+<h3>5.6 Primas de seguro (se suman a la cuota, nunca a la tasa)</h3>
+<p>Fórmula general para Vida y Vida Más (ambas usan la misma tabla de tarifas por edad de la sección 5.6.1; Vida Más agrega beneficios adicionales sin costo, no una tarifa distinta):</p>
+<pre><code>prima_mensual = (tarifa_por_edad(Edad) / 1.000.000) × Monto</code></pre>
+<p>Fórmula para Desempleo (tarifa plana, no depende de la edad ni del grupo):</p>
+<pre><code>prima_desempleo_mensual = (2.808 / 1.000.000) × Monto</code></pre>
+<table>
+<thead><tr><th>Seguro</th><th>Aplica a</th></tr></thead>
+<tbody>
+<tr><td>Vida</td><td>Todos los planes (P12, P48, P79/P80/P81, PA6)</td></tr>
+<tr><td>Vida Más</td><td>Cobertura opcional adicional (beneficios extra, misma tarifa que Vida), disponible en todos los planes</td></tr>
+<tr><td>Desempleo</td><td>Solo plan P48</td></tr>
+</tbody>
+</table>
+<p>El plan P48 suma la prima de Vida y la de Desempleo a la cuota. El plan plano (P12/P79/P80/P81) y el plan PA6 solo suman la prima de Vida (y opcionalmente Vida Más); no cobran prima de desempleo porque ese plan no la incluye.</p>
+
+<h4>5.6.1 Tabla completa de tarifa de seguro de Vida / Vida Más, por edad</h4>
+<p>Valor de <code>tarifa_por_edad</code> (pesos colombianos por cada millón desembolsado), según la edad del cliente en años cumplidos:</p>
+<table>
+<caption>Tarifa mensual del seguro de vida por millón de pesos desembolsado, por edad del cliente.</caption>
+<thead><tr><th>Edad</th><th>Tarifa</th><th>Edad</th><th>Tarifa</th><th>Edad</th><th>Tarifa</th><th>Edad</th><th>Tarifa</th></tr></thead>
+<tbody>
+<tr><td>18</td><td>$1.435</td><td>36</td><td>$1.435</td><td>54</td><td>$1.435</td><td>72</td><td>$2.987</td></tr>
+<tr><td>19</td><td>$1.435</td><td>37</td><td>$1.435</td><td>55</td><td>$1.435</td><td>73</td><td>$3.073</td></tr>
+<tr><td>20</td><td>$1.435</td><td>38</td><td>$1.435</td><td>56</td><td>$1.475</td><td>74</td><td>$3.157</td></tr>
+<tr><td>21</td><td>$1.435</td><td>39</td><td>$1.435</td><td>57</td><td>$1.530</td><td>75</td><td>$3.243</td></tr>
+<tr><td>22</td><td>$1.435</td><td>40</td><td>$1.435</td><td>58</td><td>$1.667</td><td>76</td><td>$3.918</td></tr>
+<tr><td>23</td><td>$1.435</td><td>41</td><td>$1.435</td><td>59</td><td>$1.739</td><td>77</td><td>$3.918</td></tr>
+<tr><td>24</td><td>$1.435</td><td>42</td><td>$1.435</td><td>60</td><td>$1.827</td><td>78</td><td>$3.918</td></tr>
+<tr><td>25</td><td>$1.435</td><td>43</td><td>$1.435</td><td>61</td><td>$1.890</td><td>79</td><td>$3.918</td></tr>
+<tr><td>26</td><td>$1.435</td><td>44</td><td>$1.435</td><td>62</td><td>$1.969</td><td>80</td><td>$3.918</td></tr>
+<tr><td>27</td><td>$1.435</td><td>45</td><td>$1.435</td><td>63</td><td>$2.049</td><td>81</td><td>$3.918</td></tr>
+<tr><td>28</td><td>$1.435</td><td>46</td><td>$1.435</td><td>64</td><td>$2.128</td><td>82</td><td>$3.918</td></tr>
+<tr><td>29</td><td>$1.435</td><td>47</td><td>$1.435</td><td>65</td><td>$2.206</td><td>83</td><td>$3.918</td></tr>
+<tr><td>30</td><td>$1.435</td><td>48</td><td>$1.435</td><td>66</td><td>$2.286</td><td>84</td><td>$3.918</td></tr>
+<tr><td>31</td><td>$1.435</td><td>49</td><td>$1.435</td><td>67</td><td>$2.365</td><td></td><td></td></tr>
+<tr><td>32</td><td>$1.435</td><td>50</td><td>$1.435</td><td>68</td><td>$2.444</td><td></td><td></td></tr>
+<tr><td>33</td><td>$1.435</td><td>51</td><td>$1.435</td><td>69</td><td>$2.522</td><td></td><td></td></tr>
+<tr><td>34</td><td>$1.435</td><td>52</td><td>$1.435</td><td>70</td><td>$2.602</td><td></td><td></td></tr>
+<tr><td>35</td><td>$1.435</td><td>53</td><td>$1.435</td><td>71</td><td>$2.901</td><td></td><td></td></tr>
+</tbody>
+</table>
+<p>Reglas de uso: la tarifa es plana ($1.435 por millón) para todas las edades de 18 a 55 años; a partir de 56 años sube progresivamente; a partir de 76 años queda fija en $3.918 por millón. Si la edad del cliente está fuera del rango 18–84, no hay tarifa definida y el agente debe advertirlo en vez de extrapolar.</p>
+
+<h4>5.6.2 Beneficios incluidos sin costo adicional (no afectan la prima, son informativos)</h4>
+<div class="grid3">
+<div class="card">
+<h4>Ambos seguros (Empleado y Independiente Protegido)</h4>
+<p>Reducción de 20 puntos básicos por debajo de la tasa de política del crédito; cobertura de cuotas mensuales según la eventualidad cubierta; cada cuota cubierta hasta $4.000.000.</p>
+</div>
+<div class="card">
+<h4>Seguro Empleado Protegido — extra</h4>
+<p>Hasta 6 cuotas mensuales cubiertas por desempleo involuntario; 12 cuotas por enfermedades graves.</p>
+</div>
+<div class="card">
+<h4>Seguro Independiente Protegido — extra</h4>
+<p>3 cuotas por incapacidad temporal de 20 a 110 días, 6 cuotas si supera 110 días; 12 cuotas por enfermedades graves; 6 cuotas por muerte accidental.</p>
+</div>
+</div>
+<p>Ambos seguros incluyen, sin costo adicional, un paquete de servicios de empleabilidad/asesoría (un curso Coursera al año, mejora de hoja de vida, preparación de entrevistas, comparación salarial, bolsa de empleo, asesoría legal laboral u orientación tributaria y consultoría de negocio para independientes). Estos servicios no tienen impacto en la tasa ni en la cuota; se documentan aquí solo como contexto del producto.</p>
+
+<h3>5.7 Beneficio "Preferencial"</h3>
+<div class="callout">
+<span class="tag">Regla exacta</span>
+Se descuenta <strong>0.05%</strong> adicional sobre la tasa plana únicamente cuando se cumplen <strong>ambas</strong> condiciones a la vez:
+<ul>
+<li>El <strong>Segmento</strong> del cliente es exactamente <em>"Preferencial"</em>, y</li>
+<li>El <strong>Grupo</strong> del cliente es G1, G2, G3 o G4.</li>
+</ul>
+Si el segmento es distinto de "Preferencial" (Personal, Plus, Independientes, Otros Segmentos), este beneficio <strong>no aplica</strong>, sin importar el grupo.
+</div>
+
+<h3>5.8 Beneficio por monto alto ("beneficio especial" / "beneficio por estrategia")</h3>
+<table>
+<thead><tr><th>Condición de monto</th><th>Grupo</th><th>Descuento adicional</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">Monto ≥ $50.000.000</td><td>G1 o G2</td><td>−0.10%</td></tr>
+<tr><td>G3 o G4</td><td>−0.05%</td></tr>
+<tr><td>G5, G6 o G7</td><td>0% (no aplica)</td></tr>
+<tr><td>Monto &lt; $50.000.000</td><td>Cualquiera</td><td>0% (no aplica)</td></tr>
+</tbody>
+</table>
+
+<h3>5.9 Ajuste comercial excepcional (opcional, por asesor)</h3>
+<p>Existe un mecanismo administrativo que permite sumar o restar puntos porcentuales adicionales a la tasa de un asesor comercial específico, cuando dicho asesor participa en un programa piloto autorizado. Si no hay información de un ajuste vigente para el asesor de la operación, este ajuste es <strong>0%</strong> y no debe inventarse ni asumirse.</p>
+</section>
+
+<section id="libre-inversion">
+<h2>6. Escenario A — Libre Inversión</h2>
+<p>Planes disponibles: <strong>PA6</strong> (con garantía FNG), <strong>P48</strong> (con seguro de desempleo) y <strong>P12</strong> (tasa fija plana).</p>
+<ol>
+<li>Buscar la tasa base en la <strong>Tabla A</strong> (sección 4.1) por Grupo, Monto y Plazo.</li>
+<li>Aplicar el ajuste comercial excepcional (5.9), si existe.</li>
+<li>Calcular en paralelo:
+  <ul>
+    <li><strong>P12</strong> = tasa base − beneficio nómina (5.2) − beneficio preferencial (5.7, si aplica) − beneficio por monto alto (5.8, si aplica).</li>
+    <li><strong>P48</strong> = P12 − 0.15% (regla 5.1).</li>
+    <li><strong>PA6</strong> = mismo cálculo que P12, pero el desembolso neto se reduce por el costo de la garantía si el cliente elige "Con FNG" (ver 6.1).</li>
+  </ul>
+</li>
+<li>Para plazos de 61 a 84 y 85 a 120 meses, aplicar la extensión de la sección 5.3.</li>
+<li>Convertir a N.A.M.V. y E.A. (5.4).</li>
+<li>Calcular la cuota: PMT estándar para P48 y P12 en todos los plazos; para PA6, PMT en 48 y 60 meses, e interés simple (5.5) en plazos de 72 meses en adelante.</li>
+<li>Sumar primas de seguro según el plan (5.6).</li>
+</ol>
+
+<h3>6.1 Garantía FNG</h3>
+<pre><code>Costo_garantía   = Monto × 2.99% × (1 + 19% IVA)     ' tarifa única, igual para cualquier monto
+Desembolso_neto  = Monto − Costo_garantía             ' solo si el cliente elige "Con FNG"
+Desembolso_neto  = Monto                              ' si el cliente elige "Sin FNG"</code></pre>
+</section>
+
+<section id="compra-cartera">
+<h2>7. Escenario B — Compra de Cartera (producto independiente)</h2>
+<p>Planes disponibles: <strong>P48</strong> y <strong>P79</strong>. Este escenario <strong>no</strong> maneja garantía FNG ni selección de "entidad a comprar cartera" (esos elementos solo existen dentro del escenario Preaprobados, sección 8).</p>
+<ol>
+<li>Buscar la tasa base en la <strong>Tabla B</strong> (sección 4.2) por Grupo, Monto y Plazo.</li>
+<li>Aplicar el ajuste comercial excepcional (5.9), si existe.</li>
+<li><strong>P79</strong> = tasa base − beneficio nómina (5.2) − beneficio preferencial (5.7, si aplica) − beneficio por monto alto (5.8, si aplica).</li>
+<li><strong>P48</strong> = P79 − 0.15% (regla 5.1).</li>
+<li>Para plazos de 61 a 84 y 85 a 120 meses, aplicar la extensión de la sección 5.3, usando siempre P79 (60 meses) como base.</li>
+<li>Convertir a N.A.M.V. y E.A. (5.4).</li>
+<li>Calcular la cuota con PMT estándar (5.5) en todos los plazos disponibles.</li>
+<li>Sumar primas de seguro según el plan (5.6).</li>
+</ol>
+</section>
+
+<section id="preaprobados">
+<h2>8. Escenario C — Preaprobados</h2>
+<p>Este escenario agrupa tres modalidades bajo un mismo flujo: <strong>Libre Inversión</strong>, <strong>Retanqueos</strong> y <strong>Compra Cartera</strong>. Planes: <strong>P48</strong>, <strong>P79/P80/P81</strong> (el nombre exacto depende del contexto comercial, la mecánica de cálculo es la misma) y <strong>PA6</strong> (garantía FNG, relevante cuando la modalidad es Compra Cartera).</p>
+
+<h3>8.1 Selección de tabla maestra según modalidad</h3>
+<table>
+<thead><tr><th>Modalidad</th><th>Tabla maestra a usar</th></tr></thead>
+<tbody>
+<tr><td>Libre Inversión</td><td>Tabla A (sección 4.1)</td></tr>
+<tr><td>Retanqueos</td><td>Tabla B (sección 4.2)</td></tr>
+<tr><td>Compra Cartera</td><td>Tabla B (sección 4.2)</td></tr>
+</tbody>
+</table>
+
+<h3>8.2 Orden de cálculo del plan plano (P79/P80/P81)</h3>
+<ol>
+<li>Tasa base = búsqueda en la tabla correspondiente (8.1), por Grupo, Monto y Plazo.</li>
+<li>Aplicar descuento por entidad o por retanqueo (ver tabla siguiente).</li>
+<li>Aplicar beneficio preferencial (5.7) si el Segmento es exactamente "Preferencial" y el Grupo es G1–G4.</li>
+<li>Aplicar beneficio nómina (5.2).</li>
+<li>Aplicar beneficio por monto alto (5.8), si aplica.</li>
+</ol>
+
+<table>
+<thead><tr><th>Condición</th><th>Descuento adicional</th></tr></thead>
+<tbody>
+<tr><td>Modalidad = Compra Cartera, y Grupo ∈ {G1, G2, G3}, y hay una entidad de cartera seleccionada (Otros Bancos, Scotiabank, Davivienda, Itaú o BBVA)</td><td>−0.05%</td></tr>
+<tr><td>Modalidad = Retanqueos (cualquier grupo)</td><td>−0.07%</td></tr>
+<tr><td>Modalidad = Compra Cartera con Grupo G4 en adelante, o Modalidad = Libre Inversión</td><td>0% (no aplica descuento por entidad/retanqueo)</td></tr>
+</tbody>
+</table>
+
+<h3>8.3 Plan P48</h3>
+<pre><code>tasa_P48 (48 o 60 meses) = tasa_plana_correspondiente (calculada en 8.2) − 0.15%</code></pre>
+
+<h3>8.4 Garantía FNG (plan PA6, cuando la modalidad lo permite)</h3>
+<p>Misma mecánica que en la sección 6.1: costo de garantía = Monto × 2.99% × 1.19, descontado del desembolso solo si el cliente elige "Con FNG".</p>
+
+<div class="callout warn">
+<span class="tag">Alcance validado</span>
+Las reglas de esta sección están completamente definidas y verificadas para plazos de <strong>48 y 60 meses</strong>. Para plazos superiores (61 a 120 meses) dentro del escenario Preaprobados, se recomienda aplicar la misma extensión general de la sección 5.3 como mejor aproximación, pero validar el resultado con el área de producto antes de usarlo en producción, ya que la fuente original no tenía esta extensión completamente construida para este escenario en particular (a diferencia de Libre Inversión y Compra de Cartera, donde sí está completa).
+</div>
+</section>
+
+<section id="algoritmo">
+<h2>9. Algoritmo completo (pseudocódigo)</h2>
+<pre><code>función calcular_tasa_fija(Escenario, Modalidad, Grupo, Monto, Plazo, Segmento,
+                            Nomina, Plan, Garantia, Entidad):
+
+    # 1. Elegir tabla maestra
+    si Escenario == "Libre Inversión":
+        tabla = Tabla_A
+    si Escenario == "Compra de Cartera":
+        tabla = Tabla_B
+    si Escenario == "Preaprobados":
+        si Modalidad == "Libre Inversión":  tabla = Tabla_A
+        si Modalidad == "Retanqueos":        tabla = Tabla_B
+        si Modalidad == "Compra Cartera":    tabla = Tabla_B
+
+    # 2. Tasa base (bloque ≤60 meses)
+    plazo_base = 60 si Plazo > 60 sino Plazo
+    tasa = buscar(tabla, Grupo, Monto, plazo_base)     # sección 4
+
+    # 3. Ajuste comercial excepcional (si existe, dato externo del asesor)
+    tasa = tasa + ajuste_comercial_excepcional          # normalmente 0
+
+    # 4. Descuentos propios de Preaprobados (solo si Escenario == "Preaprobados")
+    si Escenario == "Preaprobados":
+        si Modalidad == "Compra Cartera" y Grupo en [G1,G2,G3] y Entidad != vacío:
+            tasa = tasa − 0.05%
+        si no si Modalidad == "Retanqueos":
+            tasa = tasa − 0.07%
+
+    # 5. Beneficio preferencial
+    si Segmento == "Preferencial" y Grupo en [G1,G2,G3,G4]:
+        tasa = tasa − 0.05%
+
+    # 6. Beneficio nómina
+    si Nomina == "SI":
+        tasa = tasa − 0.05%
+    # "Nómina potencial" y "NO" no descuentan nada
+
+    # 7. Beneficio por monto alto
+    si Monto >= 50.000.000:
+        si Grupo en [G1,G2]: tasa = tasa − 0.10%
+        si no si Grupo en [G3,G4]: tasa = tasa − 0.05%
+
+    tasa_plana_final = tasa     # esta es la tasa del plan P12/P79/P80/P81
+
+    # 8. Plan P48
+    si Plan == "P48":
+        tasa_final = tasa_plana_final − 0.15%
+    si no:
+        tasa_final = tasa_plana_final
+
+    # 9. Extensión a plazos largos (recalcular desde el paso 2 con plazo_base=60,
+    #    y luego reemplazar tasa_final según el plazo real solicitado)
+    si Plazo entre 61 y 84:
+        si Grupo en [G1,G2]: tasa_final = tasa_plana_final − 0.05%
+        si no:                tasa_final = tasa_plana_final + 0.05%
+        si Plan == "P48": tasa_final = tasa_final − 0.10%
+
+    si Plazo entre 85 y 120:
+        si Grupo en [G1,G2]: tasa_final = tasa_plana_final − 0.07%
+        si no:                tasa_final = tasa_plana_final + 0.02%
+        si Plan == "P48": tasa_final = tasa_final − 0.10%
+
+    # 10. Conversión
+    namv = tasa_final × 12
+    ea   = (1 + namv/12)^12 − 1
+
+    # 11. Cuota
+    si (Plan == "PA6" y Plazo >= 72) o (Escenario == "Preaprobados" y Plazo >= 72):
+        cuota = (Monto / Plazo) + Monto × tasa_final
+    si no:
+        cuota = Monto × tasa_final / (1 − (1 + tasa_final)^(−Plazo))
+
+    # 12. Seguros
+    prima_vida = tarifa_por_edad(Segmento_edad) × Monto / 1.000.000
+    si Plan == "P48":
+        prima_desempleo = 2.808 / 1.000.000 × Monto
+        cuota_total = cuota + prima_vida + prima_desempleo
+    si no:
+        cuota_total = cuota + prima_vida
+
+    # 13. Garantía FNG (solo si Plan == "PA6" y Garantia == "Con FNG")
+    si Plan == "PA6" y Garantia == "Con FNG":
+        costo_garantia = Monto × 2.99% × 1.19
+        desembolso_neto = Monto − costo_garantia
+    si no:
+        desembolso_neto = Monto
+
+    devolver { tasa_final (M.V.), namv, ea, cuota, cuota_total, desembolso_neto }
+</code></pre>
+</section>
+
+<section id="ejemplos">
+<h2>10. Ejemplos resueltos</h2>
+
+<div class="grid3">
+<div class="card">
+<h4>Ejemplo 1 — Libre Inversión, plan P12</h4>
+<p>Grupo G2, Monto $40.000.000, Plazo 60 meses, Segmento Personal, Nómina = SI.<br><br>
+Tasa base (Tabla A, G2, tramo 3, 60m) = 1.81%.<br>
+− Nómina (SI): 1.81% − 0.05% = <strong>1.76% M.V.</strong><br>
+N.A.M.V. = 21.12% · E.A. ≈ 23.32%</p>
+</div>
+<div class="card">
+<h4>Ejemplo 2 — Compra de Cartera, plan P48</h4>
+<p>Grupo G1, Monto $15.000.000, Plazo 48 meses, Nómina = NO.<br><br>
+Tasa base P79 (Tabla B, G1, tramo 2, 48m) = 1.72%.<br>
+Sin descuentos adicionales (NO nómina, sin monto alto).<br>
+Tasa P48 = 1.72% − 0.15% = <strong>1.57% M.V.</strong><br>
+La cuota de P48 además suma la prima de seguro de desempleo.</p>
+</div>
+<div class="card">
+<h4>Ejemplo 3 — Preaprobados, modalidad Compra Cartera</h4>
+<p>Grupo G2, Monto $70.000.000, Plazo 60 meses, Segmento Preferencial, Entidad = Davivienda, Nómina = NO.<br><br>
+Tasa base (Tabla B, G2, tramo 4, 60m) = 1.79%.<br>
+− Entidad (G1-G3 + Compra Cartera): 1.79% − 0.05% = 1.74%<br>
+− Preferencial (Segmento=Preferencial y G1-G4): 1.74% − 0.05% = <strong>1.69% M.V.</strong></p>
+</div>
+</div>
+</section>
+
+<section id="limitaciones">
+<h2>11. Límites y supuestos conocidos</h2>
+<ul>
+<li>En la Tabla B (Compra de Cartera), los valores de <strong>G6 y G7 son idénticos</strong> en todos los tramos y plazos. Puede ser una decisión comercial intencional (mismo trato para ambos grupos) — se recomienda confirmarlo con el área de producto antes de asumir que es un error de digitación.</li>
+<li>La extensión de tasas a plazos de 61 a 120 meses está completamente definida para <strong>Libre Inversión</strong> y <strong>Compra de Cartera</strong>. Para el escenario <strong>Preaprobados</strong> en esos mismos plazos (ver nota en 8.4), se recomienda aplicar la misma regla general como mejor aproximación y validar el resultado con el área de producto antes de comunicarlo a un cliente.</li>
+<li>El costo de la garantía FNG es siempre 2.99% + IVA, sin importar el monto: no existen tramos de monto con tarifa diferenciada para este cargo.</li>
+<li>El "ajuste comercial excepcional" (5.9) es un mecanismo administrativo poco frecuente; en ausencia de instrucción explícita, se debe asumir siempre 0% y nunca inventarlo.</li>
+<li>La tarifa de seguro de vida (sección 5.6.1) solo tiene valores definidos para edades entre 18 y 84 años.</li>
+</ul>
+</section>
+
+<section id="agente">
+<h2>12. Instrucciones para el agente</h2>
+<ol>
+<li>Antes de calcular cualquier tasa, confirma que tienes: escenario, modalidad (si aplica), grupo, monto, plazo y plan. Si falta un dato, pregúntalo — no asumas valores por defecto.</li>
+<li>Aplica los ajustes en el orden exacto de la sección 9 (algoritmo). El orden importa: nómina, preferencial, monto alto y entidad/retanqueo se aplican sobre la tasa plana <em>antes</em> de restar el 0.15% del plan P48.</li>
+<li>Nunca mezcles la Tabla A con la Tabla B: revisa la sección 8.1 para saber cuál corresponde según escenario/modalidad.</li>
+<li>Si te preguntan por tasa variable, IBR, DTF o planes D20/D78, indica que esta base de conocimiento cubre exclusivamente tasa fija y no tiene esa información.</li>
+<li>Reporta siempre la tasa en M.V., N.A.M.V. y E.A., y la cuota con y sin seguros, salvo que te pidan solo uno de esos datos.</li>
+<li>Si un caso no calza con ninguna regla documentada aquí (por ejemplo, un grupo fuera de G1–G7, o una combinación de escenario/modalidad no descrita), dilo explícitamente en vez de inventar una tasa o una regla.</li>
+</ol>
+</section>
+
+<footer>
+  Documento de referencia autocontenido — Motor de Tasa Fija (Libranza / Libre Inversión). Uso interno como fuente de conocimiento para agentes conversacionales. No sustituye la validación de producto/riesgo antes de publicar tasas al cliente final.
+</footer>
+
+</main>
+</div>
+</body>
+</html>
